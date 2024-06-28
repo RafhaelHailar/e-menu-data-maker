@@ -56,7 +56,7 @@ async function getProducts() {
     
 
    if (request.status >= 200 && request.status < 300) {
-       items = data.items;
+       items = data;
        displayProduct();
    } console.log("Error: " + data.message);
 }
