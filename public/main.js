@@ -93,7 +93,9 @@ function displayProduct(category) {
 
 function displayCategory() {
    const container = document.querySelector("#categories"); 
-
+   const styleTag = document.querySelector("#category-coloring-style");
+    
+   let categoryColoring = ``;
    let categoryHTML = `
     `;
    for (let i = 0;i < categories.length;i++) {
@@ -102,8 +104,24 @@ function displayCategory() {
       categoryHTML += `
          <button onclick="displayProduct('${category.name}')">${category.name}</button>
       `;
+
+      const randColor = `hsl(${Math.floor(Math.random() * 256)},50%,50%)`;
+      const lowName = category.name.toLowerCase();
+      categoryColoring += `
+        .modal__btn.open-${lowName} {
+          background: ${randColor};
+          color: white;
+        }
+
+        .productCard .category .${lowName} {
+             color: ${randColor}; 
+         }
+      `;
    }
 
+
+   
+   styleTag.innerHTML = categoryColoring;
    container.innerHTML = categoryHTML;
 }
 
@@ -118,7 +136,7 @@ function openModal(itemIndex) {
               <img src="${product.image}" />
               <p class="modal__text">${product.description}</p>
               ${categories.map(category => {
-                 const isPartOfItem = product.categories.includes(category);
+                 const isPartOfItem = product.categories.includes(category.name);
                  return `<button onclick="categorizeProduct('${product.id}','${category.id}')"  class="${isPartOfItem ? `open-${category.name.toLowerCase()}`: ""} modal__btn">${category.name}</button>`
               }).join("")}
               <a class="link-2" onclick="closeModal()"></a>
