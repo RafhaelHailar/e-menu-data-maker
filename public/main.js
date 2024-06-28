@@ -118,7 +118,7 @@ function displayProduct(category) {
             <div class="category">
                 ${
                     product.categories.map(category => {
-                        return `<div class="${category.toLowerCase()}">
+                        return `<div class="${category.toLowerCase().replace(/ /g,'_')}">
                            ${category} 
                         </div>`
                     }).join("")
@@ -148,7 +148,7 @@ function displayCategory() {
       `;
 
       const randColor = `hsl(${Math.floor(Math.random() * 256)},50%,50%)`;
-      const lowName = category.name.toLowerCase();
+      const lowName = category.name.toLowerCase().replace(/ /g,'_');
       categoryColoring += `
         .modal__btn.open-${lowName} {
           background: ${randColor};
@@ -179,7 +179,7 @@ function openModal(itemIndex) {
               <p class="modal__text">${product.description}</p>
               ${categories.map(category => {
                  const isPartOfItem = product.categories.includes(category.name);
-                 return `<button onclick="${isPartOfItem ? "deC": "c"}ategorizeProduct('${product.id}','${category.id}')"  class="${isPartOfItem ? `open-${category.name.toLowerCase()}`: ""} modal__btn">${category.name}</button>`
+                 return `<button onclick="${isPartOfItem ? "deC": "c"}ategorizeProduct('${product.id}','${category.id}')"  class="${isPartOfItem ? `open-${category.name.toLowerCase().replace(/ /g,"_")}`: ""} modal__btn">${category.name}</button>`
               }).join("")}
               <a class="link-2" onclick="closeModal()"></a>
             </div>
