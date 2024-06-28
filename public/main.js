@@ -9,7 +9,7 @@ async function addProduct(event) {
     const formData = new FormData(event.target);
     const body = {};
 
-    for (let [key,value] of formData.etnries()) {
+    for (let [key,value] of formData.entries()) {
         body[key] = value;
     }
 
