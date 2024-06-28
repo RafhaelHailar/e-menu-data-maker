@@ -16,9 +16,10 @@ async function addCategory(event) {
 
     const response = await request.json();
 
-    if (request.ok) {
+    if (request.status >= 200 && request.status < 300) {
         alert("Category Added!");
         event.target.reset();
+        location.reload();
     } else console.log("Error: " + response.message);
 }
 
@@ -28,7 +29,7 @@ async function getProducts() {
    const data = await request.json();
     
 
-   if (request.ok) {
+   if (request.status >= 200 && request.status < 300) {
        items = data.items;
        displayProduct();
    } console.log("Error: " + data.message);
@@ -38,7 +39,7 @@ async function getCategories() {
    const request = await fetch(`${BACKEND_URL}/api/categories`); 
    const response = await request.json();
     
-   if (request.ok) {
+   if (request.status >= 200 && request.status < 300) {
        categories = response;
        displayCategory();
    } console.log("Error: " + response.message);
@@ -55,8 +56,22 @@ async function categorizeProduct(productId, categoryId) {
 
    const response = await request.json();
 
-   if (response.ok) {
+   if (request.status >= 200 && request.status < 300) {
      alert("Product is Categorized");
+     location.reload();
+   } else console.log("Error: " + response.message);
+}
+
+async function deCategorizeProduct(productId, categoryId) {
+  const request = await fetch(`${BACKEND_URL}/api/category/${categoryId}/decategorize/${productId}`,{
+      method: "DELETE",
+   }); 
+
+   const response = await request.json();
+
+   if (request.status >= 200 && request.status < 300) {
+     alert("Product is DeCategorized");
+     location.reload();
    } else console.log("Error: " + response.message);
 }
 
@@ -137,7 +152,7 @@ function openModal(itemIndex) {
               <p class="modal__text">${product.description}</p>
               ${categories.map(category => {
                  const isPartOfItem = product.categories.includes(category.name);
-                 return `<button onclick="categorizeProduct('${product.id}','${category.id}')"  class="${isPartOfItem ? `open-${category.name.toLowerCase()}`: ""} modal__btn">${category.name}</button>`
+                 return `<button onclick="${isPartOfItem ? "deC": "c"}ategorizeProduct('${product.id}','${category.id}')"  class="${isPartOfItem ? `open-${category.name.toLowerCase()}`: ""} modal__btn">${category.name}</button>`
               }).join("")}
               <a class="link-2" onclick="closeModal()"></a>
             </div>
