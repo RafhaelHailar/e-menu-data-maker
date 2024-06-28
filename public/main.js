@@ -19,7 +19,7 @@ async function addCategory(event) {
     if (request.ok) {
         alert("Category Added!");
         event.target.reset();
-    } else alert("Error: " + response.message);
+    } else console.log("Error: " + response.message);
 }
 
 async function getProducts() {
@@ -31,7 +31,7 @@ async function getProducts() {
    if (request.ok) {
        items = data.items;
        displayProduct();
-   } alert("Error: " + data.message);
+   } console.log("Error: " + data.message);
 }
 
 async function getCategories() {
@@ -41,11 +41,11 @@ async function getCategories() {
    if (request.ok) {
        categories = response;
        displayCategory();
-   } alert("Error: " + response.message);
+   } console.log("Error: " + response.message);
 }
 
 async function categorizeProduct(productId, categoryId) {
-   const request = await fetch(`${BACKEND_URL}/api/${productId}/categorize`,{
+   const request = await fetch(`${BACKEND_URL}/api/product/${productId}/categorize`,{
       method: "POST",
       headers: {
          "Content-Type": "application/json"         
@@ -57,7 +57,7 @@ async function categorizeProduct(productId, categoryId) {
 
    if (response.ok) {
      alert("Product is Categorized");
-   } else alert("Error: " + response.message);
+   } else console.log("Error: " + response.message);
 }
 
 function displayProduct(category) {
@@ -77,7 +77,7 @@ function displayProduct(category) {
             <div class="category">
                 ${
                     product.categories.map(category => {
-                        return `<div onclick="categorizeProduct('${product.id}','${category}')" class="${category.toLowerCase()}">
+                        return `<div class="${category.toLowerCase()}">
                            ${category} 
                         </div>`
                     }).join("")
@@ -119,8 +119,7 @@ function openModal(itemIndex) {
               <p class="modal__text">${product.description}</p>
               ${categories.map(category => {
                  const isPartOfItem = product.categories.includes(category);
-                  console.log(isPartOfItem);
-                 return `<button class="${isPartOfItem ? `open-${category.toLowerCase()}`: ""} modal__btn">${category}</button>`
+                 return `<button onclick="categorizeProduct('${product.id}','${category.id}')"  class="${isPartOfItem ? `open-${category.name.toLowerCase()}`: ""} modal__btn">${category.name}</button>`
               }).join("")}
               <a class="link-2" onclick="closeModal()"></a>
             </div>
@@ -135,7 +134,7 @@ function closeModal() {
 }
 
 
-document.addEventListener("load", async function() {
+window.addEventListener("load", async function() {
     await getCategories();    
     await getProducts();
 });
