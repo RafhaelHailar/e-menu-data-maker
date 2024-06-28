@@ -27,12 +27,37 @@ async function getProducts() {
 
    const data = await request.json();
     
-   items = data.items;
-   categories = data.categories;
 
-    console.log(categories);
-   displayCategory();
-   displayProduct();
+   if (request.ok) {
+       items = data.items;
+       displayProduct();
+   } alert("Error: " + data.message);
+}
+
+async function getCategories() {
+   const request = await fetch(`${BACKEND_URL}/api/categories`); 
+   const response = await request.json();
+    
+   if (request.ok) {
+       categories = response;
+       displayCategory();
+   } alert("Error: " + response.message);
+}
+
+async function categorizeProduct(productId, categoryId) {
+   const request = await fetch(`${BACKEND_URL}/api/${productId}/categorize`,{
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json"         
+      },
+      body: JSON.stringify({categoryId})
+   }); 
+
+   const response = await request.json();
+
+   if (response.ok) {
+     alert("Product is Categorized");
+   } else alert("Error: " + response.message);
 }
 
 function displayProduct(category) {
@@ -52,7 +77,7 @@ function displayProduct(category) {
             <div class="category">
                 ${
                     product.categories.map(category => {
-                        return `<div class="${category.toLowerCase()}">
+                        return `<div onclick="categorizeProduct('${product.id}',class="${category.toLowerCase()}">
                            ${category} 
                         </div>`
                     }).join("")
@@ -109,4 +134,8 @@ function closeModal() {
    container.style.display = "none";
 }
 
-getProducts();
+
+document.addEventListener("load", function() {
+    getCategories();    
+    getProducts();
+});
