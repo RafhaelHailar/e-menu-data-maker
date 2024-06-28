@@ -77,7 +77,7 @@ function displayProduct(category) {
             <div class="category">
                 ${
                     product.categories.map(category => {
-                        return `<div onclick="categorizeProduct('${product.id}',class="${category.toLowerCase()}">
+                        return `<div onclick="categorizeProduct('${product.id}','${category}')" class="${category.toLowerCase()}">
                            ${category} 
                         </div>`
                     }).join("")
@@ -100,7 +100,7 @@ function displayCategory() {
       const category = categories[i];
 
       categoryHTML += `
-         <button onclick="displayProduct('${category}')">${category}</button>
+         <button onclick="displayProduct('${category.name}')">${category.name}</button>
       `;
    }
 
@@ -135,7 +135,7 @@ function closeModal() {
 }
 
 
-document.addEventListener("load", function() {
-    getCategories();    
-    getProducts();
+document.addEventListener("load", async function() {
+    await getCategories();    
+    await getProducts();
 });
