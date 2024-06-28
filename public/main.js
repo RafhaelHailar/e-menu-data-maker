@@ -1,12 +1,36 @@
 let items;
 let categories = [];
+
+const BACKEND_URL = "http://localhost:8080";
+
+async function addCategory(event) {
+    event.preventDefault();
+
+    const request = await fetch(`${BACKEND_URL}/api/products/category`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({name: event.target.name.value})
+    }); 
+
+    const response = await request.json();
+
+    if (request.ok) {
+        alert("Category Added!");
+        event.target.reset();
+    } else alert("Error: " + response.message);
+}
+
 async function getProducts() {
-   const request = await fetch("https://e-menu-be.onrender.com/api/products"); 
+   const request = await fetch(`${BACKEND_URL}/api/products`); 
+
    const data = await request.json();
     
-
    items = data.items;
    categories = data.categories;
+
+    console.log(categories);
    displayCategory();
    displayProduct();
 }
@@ -46,7 +70,6 @@ function displayCategory() {
    const container = document.querySelector("#categories"); 
 
    let categoryHTML = `
-        <button onclick="displayProduct('')">ALL</button>
     `;
    for (let i = 0;i < categories.length;i++) {
       const category = categories[i];
@@ -65,6 +88,7 @@ function openModal(itemIndex) {
     
     container.innerHTML = `
         <div class="modal" style="--m-shadow: 0 0 10rem 0">
+              <p>${product.id}</p>
               <h1 class="modal__title">${product.name}</h1>
               <img src="${product.image}" />
               <p class="modal__text">${product.description}</p>
