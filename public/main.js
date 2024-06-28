@@ -3,6 +3,32 @@ let categories = [];
 
 const BACKEND_URL = "http://localhost:8080";
 
+async function addProduct(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const body = {};
+
+    for (let [key,value] of formData.etnries()) {
+        body[key] = value;
+    }
+
+    const request = await fetch(`${BACKEND_URL}/api/products`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    }); 
+
+       
+    if (request.status >= 200 && request.status < 300) {
+        alert("Product Added!");
+        event.target.reset();
+        location.reload();
+    } else console.log("Error: " + response.message);
+}
+
 async function addCategory(event) {
     event.preventDefault();
 
