@@ -112,6 +112,7 @@ function displayCategory() {
     
    let categoryColoring = ``;
    let categoryHTML = `
+        <button onclick="displayProduct('')">All</button>
     `;
    for (let i = 0;i < categories.length;i++) {
       const category = categories[i];
