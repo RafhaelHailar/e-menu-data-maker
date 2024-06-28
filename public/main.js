@@ -16,10 +16,11 @@ async function addCategory(event) {
 
     const response = await request.json();
 
-    if (request.ok) {
+    if (request.status >= 200 && request.status < 300) {
         alert("Category Added!");
         event.target.reset();
-    } else alert("Error: " + response.message);
+        location.reload();
+    } else console.log("Error: " + response.message);
 }
 
 async function getProducts() {
@@ -27,12 +28,51 @@ async function getProducts() {
 
    const data = await request.json();
     
-   items = data.items;
-   categories = data.categories;
 
-    console.log(categories);
-   displayCategory();
-   displayProduct();
+   if (request.status >= 200 && request.status < 300) {
+       items = data.items;
+       displayProduct();
+   } console.log("Error: " + data.message);
+}
+
+async function getCategories() {
+   const request = await fetch(`${BACKEND_URL}/api/categories`); 
+   const response = await request.json();
+    
+   if (request.status >= 200 && request.status < 300) {
+       categories = response;
+       displayCategory();
+   } console.log("Error: " + response.message);
+}
+
+async function categorizeProduct(productId, categoryId) {
+   const request = await fetch(`${BACKEND_URL}/api/product/${productId}/categorize`,{
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json"         
+      },
+      body: JSON.stringify({categoryId})
+   }); 
+
+   const response = await request.json();
+
+   if (request.status >= 200 && request.status < 300) {
+     alert("Product is Categorized");
+     location.reload();
+   } else console.log("Error: " + response.message);
+}
+
+async function deCategorizeProduct(productId, categoryId) {
+  const request = await fetch(`${BACKEND_URL}/api/category/${categoryId}/decategorize/${productId}`,{
+      method: "DELETE",
+   }); 
+
+   const response = await request.json();
+
+   if (request.status >= 200 && request.status < 300) {
+     alert("Product is DeCategorized");
+     location.reload();
+   } else console.log("Error: " + response.message);
 }
 
 function displayProduct(category) {
@@ -68,17 +108,36 @@ function displayProduct(category) {
 
 function displayCategory() {
    const container = document.querySelector("#categories"); 
-
+   const styleTag = document.querySelector("#category-coloring-style");
+    
+   let categoryColoring = ``;
    let categoryHTML = `
+        <button onclick="displayProduct('')">All</button>
     `;
    for (let i = 0;i < categories.length;i++) {
       const category = categories[i];
 
       categoryHTML += `
-         <button onclick="displayProduct('${category}')">${category}</button>
+         <button onclick="displayProduct('${category.name}')">${category.name}</button>
+      `;
+
+      const randColor = `hsl(${Math.floor(Math.random() * 256)},50%,50%)`;
+      const lowName = category.name.toLowerCase();
+      categoryColoring += `
+        .modal__btn.open-${lowName} {
+          background: ${randColor};
+          color: white;
+        }
+
+        .productCard .category .${lowName} {
+             color: ${randColor}; 
+         }
       `;
    }
 
+
+   
+   styleTag.innerHTML = categoryColoring;
    container.innerHTML = categoryHTML;
 }
 
@@ -93,9 +152,8 @@ function openModal(itemIndex) {
               <img src="${product.image}" />
               <p class="modal__text">${product.description}</p>
               ${categories.map(category => {
-                 const isPartOfItem = product.categories.includes(category);
-                  console.log(isPartOfItem);
-                 return `<button class="${isPartOfItem ? `open-${category.toLowerCase()}`: ""} modal__btn">${category}</button>`
+                 const isPartOfItem = product.categories.includes(category.name);
+                 return `<button onclick="${isPartOfItem ? "deC": "c"}ategorizeProduct('${product.id}','${category.id}')"  class="${isPartOfItem ? `open-${category.name.toLowerCase()}`: ""} modal__btn">${category.name}</button>`
               }).join("")}
               <a class="link-2" onclick="closeModal()"></a>
             </div>
@@ -109,4 +167,8 @@ function closeModal() {
    container.style.display = "none";
 }
 
-getProducts();
+
+window.addEventListener("load", async function() {
+    await getCategories();    
+    await getProducts();
+});
