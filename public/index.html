@@ -383,6 +383,14 @@ when users will click/enter button(link) browser will add a #id in a url and whe
     0 0 0 .5rem var(--focus);
 }
 
+.link-wrapper {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  display: flex;
+  gap: 2rem;
+}
+
 .link-2 {
   width: 4rem;
   height: 4rem;
@@ -391,10 +399,6 @@ when users will click/enter button(link) browser will add a #id in a url and whe
 
   color: inherit;
   font-size: 2.2rem;
-
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
 
   display: flex;
   justify-content: center;
@@ -416,12 +420,53 @@ when users will click/enter button(link) browser will add a #id in a url and whe
   transform: translateY(-.2rem);
 }
 
+.link-3 {
+
+  color: inherit;
+  font-size: 2.2rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: .2s;
+}
+
 .abs-site-link {
   position: fixed;
   bottom: 20px;
   left: 20px;
   color: hsla(0, 0%, 1000%, .6);
   font-size: 1.6rem;
+}
+
+.edit-group {
+  position: relative;
+  
+}
+
+.edit-group input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: none;
+  background: none;
+  font-weight: bold;
+  font-family: inherit; 
+  margin: 0;
+  color: var(--light);
+}
+
+.edit-group input.show-border {
+  border: 2px solid var(--light) !important;
+}
+
+.hide {
+  visibility: hidden !important;
+}
+
+.vanish {
+  display: none !important;
 }
 
     </style>
@@ -551,6 +596,7 @@ when users will click/enter button(link) browser will add a #id in a url and whe
         </div>
         <!-- /modal 3 -->
     </main>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<script type="text/javascript" src="./main.js"></script>
   </body>
 </html>

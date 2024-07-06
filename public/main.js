@@ -1,5 +1,9 @@
 let items;
 let categories = [];
+const STATE = {
+    editingMode: false,
+    editedId: null,
+};
 
 const BACKEND_URL = "https://e-menu-be.onrender.com";
 
@@ -101,6 +105,25 @@ async function deCategorizeProduct(productId, categoryId) {
    } else console.log("Error: " + response.message);
 }
 
+async function updateProduct(product) {
+    const request = await fetch(`${BACKEND_URL}/api/product/update`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(product)
+    });
+
+    const response = await request.json();
+
+    if (request.status >= 200 && request.status < 300) {
+        alert(response.message);
+        location.reload();
+    } else {
+        alert(response.message);
+    }
+}
+
 function displayProduct(category) {
    const container = document.querySelector("#products");
     
@@ -174,18 +197,100 @@ function openModal(itemIndex) {
     container.innerHTML = `
         <div class="modal" style="--m-shadow: 0 0 10rem 0">
               <p>${product.id}</p>
-              <h1 class="modal__title">${product.name}</h1>
-              <img src="${product.image}" />
-              <p class="modal__text">${product.description}</p>
+              <div class="edit-group">
+                <input class="modal__title hide edit-name" type="text" value="${product.name}" disabled/>
+                <h1 class="modal__title">${product.name}</h1>
+              </div>
+              <div class="edit-group">
+                <input class="modal__title hide edit-image" type="text" value="${product.image}" disabled/>
+                <img src="${product.image}" />
+              </div>
+              <div class="edit-group" style="margin: 0; padding: 0;font-weight:bold; display: flex; align-items: center">
+                <span style="position: absolute">&#8369</span>  
+                <input class="modal__text hide edit-price" type="text" style=" padding: 0 1rem;" value="${product.price}" disabled/>
+                <p class="modal__text" style="margin: 0; padding: 0 1rem;">${product.price}</p>
+              </div>
+              <div class="edit-group">
+                 <input class="modal__text hide edit-description" type="text" style="width: 100%" value="${product.description}" disabled/>
+                 <p class="modal__text">${product.description}</p>
+              </div>
               ${categories.map(category => {
                  const isPartOfItem = product.categories.includes(category.name);
                  return `<button onclick="${isPartOfItem ? "deC": "c"}ategorizeProduct('${product.id}','${category.id}')"  class="${isPartOfItem ? `open-${category.name.toLowerCase().replace(/ /g,"_")}`: ""} modal__btn">${category.name}</button>`
               }).join("")}
-              <a class="link-2" onclick="closeModal()"></a>
+              <div class="link-wrapper">
+                <div style="display: flex">
+                    <a class="link-3 modal-edit" onclick="toggleEditMode()"><i class="fa-solid fa-pen-to-square"></i></a>
+                    <a class="link-3 modal-save vanish" onclick="toggleEditMode('${product.id}')"> <i class="fa-solid fa-floppy-disk"></i></a>
+                </div>
+                <a class="link-2" onclick="closeModal()"></a>
+              </div>
             </div>
           </div>
     `
    container.style.display = "flex"; 
+}
+
+function toggleEditMode(id) {
+    STATE.editedId = id;
+
+    if (!STATE.editingMode) {
+        STATE.editingMode = true;
+        document.querySelector(".modal-edit").classList.add("vanish");
+        document.querySelector(".modal-save").classList.remove("vanish");
+        return editMode();
+    } 
+
+    STATE.editingMode = false;
+    document.querySelector(".modal-edit").classList.remove("vanish");
+    document.querySelector(".modal-save").classList.add("vanish");
+    saveEdit();
+}
+
+function editMode() {
+    const editInputs = document.querySelectorAll(".edit-group input");
+    const editingHTML = document.querySelectorAll(".edit-group input ~ *");
+
+    for (let i = 0;i < editInputs.length;i++) {
+        editInputs[i].classList.add("show-border");
+        editInputs[i].removeAttribute("disabled");
+        editInputs[i].classList.remove("hide");
+    }
+    
+    for (let i = 0;i < editingHTML.length;i++) {
+        editingHTML[i].classList.add("hide");
+    }
+}
+
+function saveEdit() {
+    const editInputs = document.querySelectorAll(".edit-group input");
+    const editingHTML = document.querySelectorAll(".edit-group input ~ *");
+
+    for (let i = 0;i < editInputs.length;i++) {
+        editInputs[i].classList.remove("show-border");
+        editInputs[i].setAttribute("disabled","true");
+        editInputs[i].classList.add("hide");
+    }
+    
+    for (let i = 0;i < editingHTML.length;i++) {
+        editingHTML[i].classList.remove("hide");
+    }
+
+    const id = STATE.editedId;  
+    if (!id) return;
+
+    const name = document.querySelector(".edit-group .edit-name").value;
+    const description = document.querySelector(".edit-group .edit-description").value;
+    const image = document.querySelector(".edit-group .edit-image").value;
+    const price = document.querySelector(".edit-group .edit-price").value;
+
+    updateProduct({
+        id,
+        name,
+        description,
+        image,
+        price
+    });
 }
 
 function closeModal() {
